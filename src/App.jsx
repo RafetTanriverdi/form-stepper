@@ -1,7 +1,29 @@
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { stepperValidation } from "./validations/stepper-validation";
+import classNames from "classnames";
+import { AiOutlineCheck } from "react-icons/ai";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
+  const steps = [
+    {
+      step: 1,
+      title: "Personal Info",
+    },
+    {
+      step: 2,
+      title: "age and proffesion",
+    },
+    {
+      step: 3,
+      title: "About",
+    },
+    {
+      step: 4,
+      title: "Blog",
+    },
+  ];
   return (
     <div>
       <Formik
@@ -23,22 +45,71 @@ function App() {
           console.log("values", values);
         }}
       >
-        {({ values, setFieldValue, isValid, dirty ,errors}) => {
+        {({
+          values,
+          setFieldValue,
+          isValid,
+          dirty,
+          errors,
+        }) => {
           const prevHandle = (e) => {
             setFieldValue("step", values.step - 1);
           };
           const nextHandle = (e) => {
             setFieldValue("step", values.step + 1);
           };
+          const stepHandle = (e) => {
+            setFieldValue("step", e);
+          };
           return (
             <Form className="w-[500px] mx-auto">
-              <pre>{JSON.stringify(isValid)} </pre>
-              <pre>{JSON.stringify(dirty)} </pre>
-              <pre>{JSON.stringify(errors)} </pre>
-              <header className="mb-4 ">
-                <h3 className="text-lg font-medium text-zinc-700">
-                  Adim {values.step}
-                </h3>
+              <header className="mb-4 grid grid-cols-4 gap-x-2.5 border  border-zinc-400 ">
+                {/* <pre>{JSON.stringify(isValid)} </pre>
+                <pre>{JSON.stringify(dirty)} </pre>
+                <pre>{JSON.stringify(errors)} </pre>
+                  <h3 className="text-lg font-medium text-zinc-700">
+                    Adim {values.step}
+                  </h3> */}
+                {steps.map((step) => (
+                  <button
+                    type="button"
+                    onClick={() => stepHandle(step.step)}
+                    className="flex flex-col items-center justify-center py-2.5"
+                    disabled={values.step < step.step}
+                  >
+                    <div
+                      className={classNames(
+                        "w-10 h-10 mb-2.5 rounded-full flex items-center justify-center bg-zinc-100",
+                        {
+                          "bg-blue-100 text-blue-600":
+                            values.step === step.step,
+                          "bg-green-100 text-green-600":
+                            values.step > step.step,
+                          "bg-zinc-100 text-zinc-700":
+                            values.step !== step.step,
+                        }
+                      )}
+                    >
+                      {values.step > step.step ? (
+                        <AiOutlineCheck />
+                      ) : (
+                        step.step
+                      )}
+                    </div>{" "}
+                    <div
+                      className={classNames("text-sm", {
+                        "text-blue-600":
+                          values.step === step.step,
+                        "text-green-600":
+                          values.step > step.step,
+                        "text-zinc-500":
+                          values.step !== step.step,
+                      })}
+                    >
+                      {step.title}
+                    </div>
+                  </button>
+                ))}
               </header>
               {values.step === 1 && (
                 <div className="grid gap-2.5">
@@ -130,9 +201,26 @@ function App() {
                   </button>
                 )) || <div />}
                 {values.step === values.laststep ? (
-                  <button className="button" type="submit">
-                    Submit
-                  </button>
+                  <>
+                    <button
+                      className="button"
+                      type="submit"
+                    >
+                      Submit
+                    </button>
+                    <ToastContainer
+                      position="bottom-right"
+                      autoClose={5000}
+                      hideProgressBar={false}
+                      newestOnTop={false}
+                      closeOnClick
+                      rtl={false}
+                      pauseOnFocusLoss
+                      draggable
+                      pauseOnHover
+                      theme="light"
+                    />
+                  </>
                 ) : (
                   <button
                     className="button"
@@ -144,6 +232,7 @@ function App() {
                   </button>
                 )}
               </div>
+              <ToastContainer position="bottom-right" />
             </Form>
           );
         }}
